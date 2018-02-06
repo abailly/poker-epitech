@@ -1,0 +1,14 @@
+*~
+TAGS
+*.DS_Store
+.stack-work/
+\#*
+dist/
+*.cabal
+\*.dat
+gorilla-space.js
+.work
+.built
+.#*
+*.ibc
+node_modules/
