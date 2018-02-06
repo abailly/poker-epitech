@@ -2,15 +2,20 @@ module PokerSpec where
 
 import           Test.Hspec
 
-mainDePoker main1 main2 = Egalite
+mainDePoker []    []    = Egalite
+mainDePoker card1 card2 = AGagne
 
-data Vainqueur = Egalite
+data Vainqueur = Egalite | AGagne
+  deriving (Eq, Show)
 
-instance Show Vainqueur where
-  show Egalite = "Egalite"
+data Color = Coeur | Trefle
+  deriving (Eq, Show)
 
-instance Eq Vainqueur where
-  Egalite == Egalite = True
+data Value = As  | Deux
+  deriving (Eq, Show)
+
+data Card = Card Value Color
+  deriving (Eq, Show)
 
 spec :: Spec
 spec = describe "Main de Poker" $ do
@@ -20,3 +25,15 @@ spec = describe "Main de Poker" $ do
         main2 = []
 
     mainDePoker main1 main2 `shouldBe` Egalite
+
+  -- construire les combinaisons a partir d'une main
+  -- definir ce que c'est qu'une carte
+  --
+
+  it "compare une seule carte" $ do
+    let main1 = [card]
+        main2 = [card2]
+        card = Card As Coeur
+        card2 = Card Deux Trefle
+
+    mainDePoker main1 main2 `shouldBe` AGagne
