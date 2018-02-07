@@ -67,6 +67,9 @@ spec = describe "Analyseur syntaxique d'additions à 1 chiffre" $ do
     it "analyse un chiffre comme un entier" $
       property $ analyseSingleDigit
 
+    it "analyse plusieurs chiffres comme un entier" $
+      property $ analyseDigitString
+
     it "analyse un non-digit comme une syntaxerror" $
       intParser "a" `shouldBe` Left "syntax error"
 
@@ -103,3 +106,13 @@ instance Arbitrary Digit where
 analyseSingleDigit :: Digit -> Bool
 analyseSingleDigit (Digit c) =
   intParser [c] == Right (Val $ read [c])
+
+newtype Digits = Digits String
+  deriving (Eq, Show)
+
+instance Arbitrary Digits where
+  arbitrary = Digits <$> listOf1 (elements ['0'.. '9'])
+
+analyseDigitString :: Digits -> Bool
+analyseDigitString (Digits s) =
+  intParser s == Right (Val $ read s)
