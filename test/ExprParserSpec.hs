@@ -6,18 +6,30 @@ import           Test.QuickCheck
 
 exprParser :: String -> Either SyntaxError Expr
 exprParser (c1:c2:c3:[]) =
-  let e1    = intParser (c1:[])
-      eplus = plusParser (c2:[])
-      e2    = intParser (c3:[])
-  in case e1 of
-       Right v1 ->
-         case eplus of
-           Right plus ->
-             case e2 of
-               Right v2 -> Right (plus v1 v2)
-               Left err -> Left err
-           Left err -> Left err
-       Left err -> Left err
+  -- let e1    = intParser (c1:[])
+  --     eplus = plusParser (c2:[])
+  --     e2    = intParser (c3:[])
+  -- in case e1 of
+  --      Right v1 ->
+  --        case eplus of
+  --          Right plus ->
+  --            case e2 of
+  --              Right v2 -> Right (plus v1 v2)
+  --              Left err -> Left err
+  --          Left err -> Left err
+  --      Left err -> Left err
+
+  do v1   <- intParser (c1:[])
+     plus <- plusParser (c2:[])
+     v2   <- intParser (c3:[])
+
+     return $ plus v1 v2
+
+  --           intParser (c1:[])   >>=
+  -- \ v1   -> plusParser (c2:[])  >>=
+  -- \ plus -> intParser (c3:[])   >>=
+  -- \ v2   -> Right (plus v1 v2)
+
 
 intParser :: String -> Either SyntaxError Expr
 intParser (c:[])
