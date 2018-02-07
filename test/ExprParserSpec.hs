@@ -5,7 +5,19 @@ import           Test.Hspec
 import           Test.QuickCheck
 
 exprParser :: String -> Either SyntaxError Expr
-exprParser _ = Right (Val 1 `Plus` Val 2)
+exprParser (c1:c2:c3:[]) =
+  let e1    = intParser (c1:[])
+      eplus = plusParser (c2:[])
+      e2    = intParser (c3:[])
+  in case e1 of
+       Right v1 ->
+         case eplus of
+           Right plus ->
+             case e2 of
+               Right v2 -> Right (plus v1 v2)
+               Left err -> Left err
+           Left err -> Left err
+       Left err -> Left err
 
 intParser :: String -> Either SyntaxError Expr
 intParser (c:[])
@@ -25,11 +37,21 @@ data Expr = Val Int
 spec :: Spec
 spec = describe "Analyseur syntaxique d'additions à 1 chiffre" $ do
 
-  it "parse '1+2'" $ do
-    exprParser "1+2" `shouldBe` Right (Val 1 `Plus` Val 2)
+  describe "analyseur de plus" $ do
+    it "parse '1+2'" $ do
+      exprParser "1+2" `shouldBe` Right (Val 1 `Plus` Val 2)
 
-  it "parse '2+1'" $ do
-    exprParser "2+1" `shouldBe` Right (Val 2 `Plus` Val 1)
+    it "parse '2+1'" $ do
+      exprParser "2+1" `shouldBe` Right (Val 2 `Plus` Val 1)
+
+    it "parse 'a+1' est une erreur" $ do
+      exprParser "a+1" `shouldBe` Left "syntax error"
+
+    it "parse '2-1' est une erreur" $ do
+      exprParser "2-1" `shouldBe` Left "syntax error"
+
+    it "parse '2+a' est une erreur" $ do
+      exprParser "2+a" `shouldBe` Left "syntax error"
 
   describe "Parser de Int" $ do
 
