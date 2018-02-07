@@ -1,14 +1,20 @@
 module ExprParserSpec where
 
-import           Data.Char  (ord)
+import           Data.Char       (isDigit, ord)
 import           Test.Hspec
+import           Test.QuickCheck
 
 exprParser :: String -> Either SyntaxError Expr
 exprParser _ = Right (Val 1 `Plus` Val 2)
 
 intParser :: String -> Either SyntaxError Expr
 intParser (c:[])
-  | c `elem` [ '0' .. '9'] = Right (Val $ ord c - ord '0')
+  | isDigit c = Right (Val $ ord c - ord '0')
+  | otherwise = Left "syntax error"
+
+plusParser :: String -> Either SyntaxError (Expr -> Expr -> Expr)
+plusParser ('+':[]) = Right Plus
+plusParser _        = Left "syntax error"
 
 type SyntaxError = String
 
@@ -27,8 +33,28 @@ spec = describe "Analyseur syntaxique d'additions à 1 chiffre" $ do
 
   describe "Parser de Int" $ do
 
-    it "parse '1'" $ do
-      intParser "1" `shouldBe` Right (Val 1)
+    it "analyse un chiffre comme un entier" $
+      property $ analyseSingleDigit
 
-    it "parse '2'" $ do
-      intParser "2" `shouldBe` Right (Val 2)
+    it "analyse un non-digit comme une syntaxerror" $
+      intParser "a" `shouldBe` Left "syntax error"
+
+  describe "Parser de '+'" $ do
+
+    it "analyse le caractère '+' comme un 'plus'" $
+      let Right f = plusParser "+"
+      in f (Val 1) (Val 2) `shouldBe` Plus (Val 1) (Val 2)
+
+    it "analyse le caractère '-' comme une erreur" $
+      let Left e = plusParser "-"
+      in e `shouldBe` "syntax error"
+
+newtype Digit = Digit Char
+  deriving (Eq, Show)
+
+instance Arbitrary Digit where
+  arbitrary = Digit <$> elements ['0'.. '9']
+
+analyseSingleDigit :: Digit -> Bool
+analyseSingleDigit (Digit c) =
+  intParser [c] == Right (Val $ read [c])
