@@ -25,11 +25,11 @@ data Expr = Val Int
 spec :: Spec
 spec = describe "Analyseur syntaxique d'additions à 1 chiffre" $ do
 
-  -- it "parse '1+2'" $ do
-  --   exprParser "1+2" `shouldBe` Right (Val 1 `Plus` Val 2)
+  it "parse '1+2'" $ do
+    exprParser "1+2" `shouldBe` Right (Val 1 `Plus` Val 2)
 
-  -- it "parse '2+1'" $ do
-  --   exprParser "2+1" `shouldBe` Right (Val 2 `Plus` Val 1)
+  it "parse '2+1'" $ do
+    exprParser "2+1" `shouldBe` Right (Val 2 `Plus` Val 1)
 
   describe "Parser de Int" $ do
 
