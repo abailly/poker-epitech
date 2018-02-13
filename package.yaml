@@ -26,8 +26,8 @@ library:
   source-dirs: src
 
 executables:
-  poker-exe:
-    main:                Main.hs
+  hcalc:
+    main:                hcalc.hs
     source-dirs:         app
     ghc-options:
     - -threaded
